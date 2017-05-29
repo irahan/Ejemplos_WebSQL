@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+   <title>Sqlite</title>
+
+<script>
+window.onload = function(){
+	if (!window.openDatabase) {
+		alert('Este navegador NO soporta el API WebSQL');
+		return;
+	} 
+	//Abrimos o creamos una base de datos
+	var db = openDatabase('libros', '1.0', 'Mis libros', 2 * 1024 *1024);
+	//Crear la tabla
+	var q = 'CREATE TABLE if not exists libros(id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, autor TEXT NOT NULL, anio INTEGER, editorial TEXT, precio REAL DEFAULT 0.00, fecha TEXT CURRENT_TIMESTAMP)';
+	db.transaction(function(tx){
+		tx.executeSql(q);
+	},
+	errorHandler,
+	exitoCreate);
+	//Insert
+	var q = "INSERT INTO libros VALUES (NULL,";
+	q += "'Rayuela',";
+	q += "'Julio Cortazar',"; 
+	q += "1998,";
+	q += "'Diana',";
+	q += "180.50,";
+	q += "CURRENT_TIMESTAMP);";
+
+	q += "INSERT INTO libros VALUES (NULL,";
+	q += "'El laberinto de la soledad',";
+	q += "'Octavio Paz' , ";
+	q += "2000,";
+	q += "'Fondo de cultura', ";
+	q += "190.50,";
+	q += "CURRENT_TIMESTAMP);";
+
+	q += "INSERT INTO libros VALUES (NULL,"
+	q += "'La región más transparente',"
+	q += "'Carlos Fuentes' ," 
+	q += "1980,"
+	q += "'Fondo de cultura', "
+	q += "290.50,"
+	q += "CURRENT_TIMESTAMP);";
+	console.log(q);
+	db.transaction(function(tx){
+		tx.executeSql(q);
+	},
+	errorHandler,
+	exitoInsert);
+	//Borramos una tabla
+	var q = 'DROP TABLE if exists libros';
+	db.transaction(function(tx){
+		tx.executeSql(q);
+	},
+	errorHandler,
+	exitoDropLibros);
+}
+function errorHandler(transaccion, error) {
+	console.log('Error transacción');
+}
+function exitoCreate() {
+	console.log("CREATE exitoso")
+}
+function exitoInsert() {
+	console.log("INSERT exitoso")
+}
+function exitoDropLibros() {
+	console.log("DROP libros exitoso")
+}
+</script>
+</head>
+
+<body>
+    <h1>Bienvenido a WebSQL</h1>
+</body>
+</html> 
