@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+   <title>Substring y Length</title>
+   <style>
+   	body{width:400px;margin:0 auto;}
+   	table{width: 100%;}
+   	th{background: blue; color:white; cursor:pointer;}
+	tr:nth-child(odd){background:#ccc;}
+	div{margin-top:15px;}
+   	.centra{text-align: center;}
+   	.der{text-align: right;}
+   	.rojo{color:red;}
+   </style>
+<script>
+/******************
+ V A R I A B L E S
+*******************/
+var db;
+var base = "libros";
+var ver = "1.0";
+var desc = "Mis libros";
+var size = 2 * 1024 *1024;
+var random = 0;
+//
+window.onload = function(){
+	if (!window.openDatabase) {
+		alert('Este navegador NO soporta el API WebSQL');
+		return;
+	} 
+	//Abrimos o creamos una base de datos
+	db = openDatabase(base, ver, desc, size);
+	//Crear la tabla
+	q = 'CREATE TABLE if not exists libros(';
+	q += 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,';
+	q += 'nombre TEXT NOT NULL,';
+	q += 'autor TEXT NOT NULL,';
+	q += 'anio INTEGER,';
+	q += 'editorial TEXT,';
+	q += 'precio REAL DEFAULT 0.00,';
+	q += 'fecha TEXT CURRENT_TIMESTAMP)';
+	db.transaction(function(tx){
+		tx.executeSql(q);
+	},
+	errorHandler,
+	exitoCreate);
+}
+/***********************
+     H A N D L E R S
+************************/
+function exitoCreate() {
+	console.log("CREATE exitosa");
+	fechas();
+}
+function exitoFechas() {
+	console.log("FECHAS exitosa");
+}
+function errorHandler(e) {
+	console.log("error: "+e.message);
+}
+/************************
+    F U N C I O N E S 
+*************************/
+function fechas() {
+	//Select
+	//2016-07-24 HH:MM:SS
+    q = "SELECT substr(fecha,1,4) as year, ";
+    q += "substr(fecha,6,2) as mes, ";
+    q += "substr(fecha,9,2) as dia, ";
+    q += "substr(fecha,12,2) as hora, ";
+    q += "substr(fecha,15,2) as min, ";
+    q += "substr(fecha,18,2) as seg, ";
+    q += "length(fecha) as lon ";
+    q += "FROM libros";
+	//
+	console.log(q);
+	db.transaction(function(tx){
+	    tx.executeSql(q,[],function (tx, data) {
+	    var len = data.rows.length, i;
+	    var meses = new Array("","Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic")
+	    cadena = "<table>";
+	    cadena += "<tr>";
+      	cadena += "<th>Dia</th>";
+        cadena += "<th>Mes</th>";
+        cadena += "<th>Año</th>";
+        cadena += "<th>Hora</th>";
+        cadena += "<th>Min</th>";
+        cadena += "<th>Seg</th>";
+        cadena += "<th>Lon</th>";
+        cadena += "</tr>";
+	    for (i = 0; i < len; i++){
+	    	y = data.rows.item(i).year;
+    		m = Number(data.rows.item(i).mes);
+    		d = data.rows.item(i).dia;
+	    	if(data.rows.item(i).lon>10){
+	    		hora = data.rows.item(i).hora;
+	    		min = data.rows.item(i).min;
+	    		seg = data.rows.item(i).seg;
+	    	} else {
+	    		hora = "--";
+	    		min = "--";
+	    		seg = "--";
+	    	}
+	      	cadena += "<tr>";
+	    	cadena += "<td class='centra'>"+d+"</td>";
+	        cadena += "<td class='centra'>"+meses[m]+"</td>";
+	        cadena += "<td class='centra'>"+y+"</td>";
+	        cadena += "<td class='centra'>"+hora+"</td>";
+	        cadena += "<td class='centra'>"+min+"</td>";
+	        cadena += "<td class='centra'>"+seg+"</td>";
+	        cadena += "<td class='centra'>"+data.rows.item(i).lon+"</td>";
+	        cadena += "</tr>";
+	    }
+	    cadena += "</table>";
+		document.getElementById('salida').innerHTML = cadena;
+	    });
+	},
+	errorHandler,
+	exitoFechas);
+}
+</script>
+</head>
+
+<body>
+    <h1 class="centra">FECHAS</h1>
+    <div id="salida"></div>
+</body>
+</html> 
