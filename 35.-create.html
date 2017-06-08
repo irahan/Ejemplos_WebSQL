@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+   <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+   <title>Sqlite Crear la base de datos</title>
+   <style>
+   	body{width:500px;margin:0 auto;}
+   	h1{text-align: center;}
+   </style>
+
+<script>
+/******************
+ V A R I A B L E S
+*******************/
+var db;
+var base = "mis-libros";
+var ver = "1.0";
+var desc = "Mis libros";
+var size = 2 * 1024 *1024;
+//
+window.onload = function(){
+	if (!window.openDatabase) {
+		alert('Este navegador NO soporta el API WebSQL');
+		return;
+	} 
+	//Abrimos o creamos una base de datos
+	db = openDatabase(base, ver, desc, size);
+	//Crear la tabla
+	db.transaction(function(tx){
+		//
+		tx.executeSql("DROP TABLE if exists libros");
+		//
+		q = 'CREATE TABLE libros(';
+		q += 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,';
+		q += 'nombre TEXT NOT NULL,';
+		q += 'anio INTEGER,';
+		q += 'idEditorial TEXT,';
+		q += 'precio REAL DEFAULT 0.00,';
+		q += 'fecha TEXT);';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "Cien años de soledad", 1980, 1, 500.50, "2016-08-01")';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "La guerra del fin del mundo", 1989, 2, 450.80, "2016-08-01")';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "La región más transparente", 1980, 3, 340.50, "2016-08-01")';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "El lenguaje de programación C", 1995, 4, 250.50, "2016-08-01")';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "El amor en los tiempos del cólera", 1998, 3, 650.50, "2016-08-01")';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libros VALUES(null, "El llano en llamas", 1998, 9, 250.50, "2016-08-02")';
+		tx.executeSql(q);
+		//
+	},
+	errorHandler,
+	exitoCreateLibros);
+}
+function creaLibroAutor() {
+	//
+	db.transaction(function(tx){
+		//
+		//
+		tx.executeSql("DROP TABLE if exists libroAutor");
+		//
+		q = 'CREATE TABLE libroAutor(';
+		q += 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,';
+		q += 'idLibro INTEGER,';
+		q += 'idAutor INTEGER);';
+		//
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 1, 1)';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 2, 2)';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 3, 3)';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 4, 4)';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 4, 5)';
+		tx.executeSql(q);
+		//
+		q = 'INSERT INTO libroAutor VALUES(null, 5, 5)';
+		tx.executeSql(q);
+		//
+	},
+	errorHandler,
+	exitoCreateLibroAutor);
+
+}
+function creaAutores() {
+	//
+	db.transaction(function(tx){
+		//
+		tx.executeSql("DROP TABLE if exists autores");
+		//
+		q = 'CREATE TABLE if not exists autores(';
+		q += 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,';
+		q += 'autor TEXT);';
+		//
+		tx.executeSql(q);
+		//1
+		tx.executeSql("INSERT INTO autores VALUES(null, 'Grabriel García Márquez')");
+		//2
+		tx.executeSql("INSERT INTO autores VALUES(null, 'Mario Vargas Llosa')");
+		//3
+		tx.executeSql("INSERT INTO autores VALUES(null, 'Carlos Fuentes')");
+		//4
+		tx.executeSql("INSERT INTO autores VALUES(null, 'Dennis Ritchie')");
+		//5
+		tx.executeSql("INSERT INTO autores VALUES(null, 'Brian Kernighan')");
+		//
+	},
+	errorHandler,
+	exitoCreateAutores);
+}
+function creaEditoriales() {
+	//
+	db.transaction(function(tx){
+		//
+		tx.executeSql("DROP TABLE if exists editoriales");
+		//
+		q = 'CREATE TABLE if not exists editoriales(';
+		q += 'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,';
+		q += 'editorial TEXT);';
+		tx.executeSql(q);
+		//1
+		tx.executeSql("INSERT INTO editoriales VALUES(null, 'Nueva Era')");
+		//2
+		tx.executeSql("INSERT INTO editoriales VALUES(null, 'Alfaguara')");
+		//3
+		tx.executeSql("INSERT INTO editoriales VALUES(null, 'Diana')");
+		//4
+		tx.executeSql("INSERT INTO editoriales VALUES(null, 'Prentice Hall')");
+		//
+	},
+	errorHandler,
+	exitoCreateEditoriales);
+}
+/***********************
+     H A N D L E R S
+************************/
+function exitoCreateLibros() {
+	console.log("CREATE libros exitosa")
+	creaLibroAutor()
+}
+function exitoCreateLibroAutor() {
+	console.log("CREATE libroAutor exitosa")
+	creaAutores()
+}
+function exitoCreateAutores() {
+	console.log("CREATE autores exitosa")
+	creaEditoriales()
+}
+function exitoCreateEditoriales() {
+	console.log("CREATE editoriales exitosa")
+}
+function errorHandler(e) {
+	console.log("error: "+e.message);
+}
+</script>
+</head>
+
+<body>
+    <h1>CREAR E INSERTAR LA BASE DE DATOS</h1>
+</body>
+</html> 
